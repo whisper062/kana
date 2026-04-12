@@ -39,12 +39,3 @@ export type ModalButton = {
     type?: 'primary' | 'secondary';
     onClick?: () => void;
 };
-
-export type Profile = {
-    version: number;
-    level: number;
-    xp: number;
-    totalXp: number;
-    rank: string;
-    updatedAt: number;
-};

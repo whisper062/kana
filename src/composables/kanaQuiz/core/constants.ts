@@ -3,14 +3,6 @@ import type { IndexedKanaChar, KanaMode, QuizSection } from './types'
 
 export const THEME_STORAGE_KEY = 'kanaTheme';
 export const STATS_STORAGE_KEY = 'kanaStats';
-export const PROFILE_STORAGE_KEY = 'kanaProfileV1';
-
-export const XP_REWARD = Object.freeze({
-    normal: 10,
-    reverse: 10,
-    combo: 16,
-    study: 12,
-});
 
 const SECTION_DEFINITIONS = [
     {

@@ -31,9 +31,6 @@ const {
     normalAnswerRef,
     normalInputDisabled,
     normalInputError,
-    profile,
-    profileProgress,
-    profileXpRequired,
     progressText,
     questionVisible,
     quizStarted,
@@ -70,24 +67,6 @@ function setComboAnswerRef(element: Element | { $el?: Element } | null) {
         <header class="app-header">
             <h1><span class="jp-text" lang="ja">かな</span> Quiz</h1>
             <p class="subtitle">Treine hiragana e katakana com foco em velocidade e memória.</p>
-
-            <section class="profile-card" aria-label="Perfil de nível">
-                <div class="profile-top">
-                    <div class="profile-level">
-                        Nível <span>{{ profile.level }}</span>
-                    </div>
-                    <div class="profile-rank">{{ profile.rank }}</div>
-                </div>
-
-                <div class="xp-track">
-                    <div class="xp-fill" :style="{ width: `${profileProgress}%` }" />
-                </div>
-
-                <div class="profile-meta">
-                    <span>{{ profile.xp }} / {{ profileXpRequired }} XP</span>
-                    <span>Total: {{ profile.totalXp }} XP</span>
-                </div>
-            </section>
         </header>
 
         <button type="button" class="theme-toggle floating-icon-button" aria-label="Alternar tema" @click="toggleTheme">
@@ -248,72 +227,6 @@ h1 {
     line-height: 1.55;
 }
 
-.profile-card {
-    margin: 0 auto 20px;
-    max-width: 560px;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--tile) 96%, #fff 4%);
-    box-shadow: 0 10px 22px var(--shadow);
-}
-
-.profile-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.profile-level {
-    font-weight: 700;
-    color: var(--text);
-    font-size: 0.95rem;
-}
-
-.profile-level span {
-    font-size: 1.05rem;
-}
-
-.profile-rank {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-weight: 700;
-}
-
-.xp-track {
-    width: 100%;
-    height: 10px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--muted) 16%, transparent);
-    overflow: hidden;
-}
-
-.xp-fill {
-    height: 100%;
-    width: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    transition: width 0.28s ease;
-}
-
-.profile-meta {
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 0.78rem;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-}
-
 .floating-icon-button {
     position: fixed;
     top: 18px;
@@ -431,17 +344,6 @@ h1 {
     .subtitle {
         font-size: 0.86rem;
         margin-bottom: 18px;
-    }
-
-    .profile-card {
-        margin-bottom: 16px;
-        padding: 12px;
-    }
-
-    .profile-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
     }
 }
 

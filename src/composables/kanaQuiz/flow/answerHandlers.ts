@@ -1,10 +1,8 @@
 import type { ComputedRef, Ref } from 'vue';
 import type { KanaChar } from '~/data/chars';
-import { XP_REWARD } from '../core/constants';
 import type { StudyCharStat } from '../core/types';
 
 type CommonContext = {
-    addXp: (amount: number) => void
     ensureKanaStats: (char: string) => void
     getKanaStats: (char: string) => { hits: number; miss: number }
     persistStats: () => void
@@ -60,7 +58,6 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
         if (acceptedAnswers.has(input)) {
             context.hits.value += 1;
             context.getKanaStats(current.char).hits += 1;
-            context.addXp(XP_REWARD.normal);
             context.showFeedback(true);
             context.persistStats();
             context.currentIndex.value += 1;
@@ -110,7 +107,6 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
                 context.getKanaStats(char.char).hits += 1;
             }
 
-            context.addXp(XP_REWARD.combo);
             context.showFeedback(true);
             context.persistStats();
             context.currentIndex.value += 1;
@@ -150,7 +146,6 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
         if (option.char === current.char) {
             context.hits.value += 1;
             context.getKanaStats(current.char).hits += 1;
-            context.addXp(XP_REWARD.reverse);
             context.showFeedback(true);
             context.persistStats();
             context.currentIndex.value += 1;
@@ -204,7 +199,6 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
         if (option === current.romaji) {
             context.hits.value += 1;
             context.getKanaStats(current.char).hits += 1;
-            context.addXp(XP_REWARD.study);
             stats.correct += 1;
             stats.incorrect = 0;
             stats.teach = false;

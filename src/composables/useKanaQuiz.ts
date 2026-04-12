@@ -1,11 +1,9 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { allChars, type KanaChar } from '~/data/chars';
-import { XP_REWARD, getSectionsForMode } from './kanaQuiz/core/constants';
-import { createDefaultProfile, getRankByLevel, getXpRequiredForLevel } from './kanaQuiz/profile/profile';
+import { getSectionsForMode } from './kanaQuiz/core/constants';
 import type {
     KanaMode,
     KanaStats,
-    Profile,
     QuizEntry,
     QuizMode,
     StudyCharStat,
@@ -22,10 +20,8 @@ import {
     createStudyModeData,
 } from './kanaQuiz/flow/modes';
 import {
-    loadStoredProfile,
     loadStoredStats,
     loadStoredTheme,
-    saveStoredProfile,
     saveStoredStats,
     saveStoredTheme,
 } from './kanaQuiz/persistence/storage';
@@ -43,7 +39,6 @@ export type {
     IndexedKanaChar,
     KanaMode,
     ModalButton,
-    Profile,
     QuizMode,
     QuizSection,
     StudyPhase,
@@ -58,9 +53,6 @@ export function useKanaQuiz() {
 
     const selectedCharIds = ref<number[]>([]);
     const selectedCharsSession = ref<KanaChar[]>([]);
-
-    const profile = ref<Profile>(createDefaultProfile());
-    const sessionXpGained = ref(0);
 
     const hits = ref(0);
     const miss = ref(0);
@@ -124,11 +116,6 @@ export function useKanaQuiz() {
     } = useKanaQuizRuntime();
 
     const isDark = computed(() => theme.value === 'dark');
-    const profileXpRequired = computed(() => getXpRequiredForLevel(profile.value.level));
-    const profileProgress = computed(() => {
-        return Math.max(0, Math.min(100, Math.round((profile.value.xp / profileXpRequired.value) * 100)));
-    });
-
     const sections = computed(() => getSectionsForMode(mode.value));
 
     const currentEntry = computed(() => quizList.value[currentIndex.value] ?? null);
@@ -175,7 +162,6 @@ export function useKanaQuiz() {
         }
 
         perKana.value = loadStoredStats().perKana;
-        profile.value = loadStoredProfile();
     }
 
     function persistStats() {
@@ -186,11 +172,6 @@ export function useKanaQuiz() {
             miss: miss.value,
             perKana: perKana.value,
         });
-    }
-
-    function persistProfile() {
-        if (!import.meta.client) return;
-        saveStoredProfile(profile.value);
     }
 
     function toggleTheme() {
@@ -231,7 +212,6 @@ export function useKanaQuiz() {
         resetRuntimeState();
         hits.value = 0;
         miss.value = 0;
-        sessionXpGained.value = 0;
         currentIndex.value = 0;
         progressText.value = '';
         quizList.value = [];
@@ -263,23 +243,6 @@ export function useKanaQuiz() {
         }
 
         return stats;
-    }
-
-    function addXp(amount: number) {
-        if (!Number.isFinite(amount) || amount <= 0) return;
-
-        sessionXpGained.value += amount;
-        profile.value.totalXp += amount;
-        profile.value.xp += amount;
-
-        while (profile.value.xp >= getXpRequiredForLevel(profile.value.level)) {
-            profile.value.xp -= getXpRequiredForLevel(profile.value.level);
-            profile.value.level += 1;
-        }
-
-        profile.value.rank = getRankByLevel(profile.value.level);
-        profile.value.updatedAt = Date.now();
-        persistProfile();
     }
 
     function buildReverseOptions(current: KanaChar) {
@@ -396,8 +359,6 @@ export function useKanaQuiz() {
         <div class="stat-line">Tempo: ${getElapsedTimeText(startTime.value)}</div>
         <div class="stat-line">Acertos: ${hits.value}</div>
         <div class="stat-line">Erros: ${miss.value}</div>
-        <div class="stat-line">XP ganho: ${sessionXpGained.value}</div>
-        <div class="stat-line">N\u00EDvel: ${profile.value.level} (${profile.value.rank})</div>
       `,
             [{ text: 'OK', type: 'primary', onClick: exitQuiz }],
         );
@@ -474,7 +435,6 @@ export function useKanaQuiz() {
 
     const { checkReverseAnswer, getStudyOptionState, handleStudyOption, submitAnswer, submitComboAnswer } =
         createKanaQuizAnswerHandlers({
-            addXp,
             activeCharPool,
             comboAnswer,
             comboInputDisabled,
@@ -537,9 +497,6 @@ export function useKanaQuiz() {
         normalAnswerRef,
         normalInputDisabled,
         normalInputError,
-        profile,
-        profileProgress,
-        profileXpRequired,
         progressText,
         questionVisible,
         quizStarted,
