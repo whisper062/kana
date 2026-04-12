@@ -40,15 +40,24 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
     refreshStudyQuizList: () => void
     unlockNextStudyCharIfNeeded: () => void
 }) {
+    function normalizeAnswerInput(value: string) {
+        return value.trim().toLowerCase();
+    }
+
     function submitAnswer() {
         const current = context.currentKana.value;
-        const input = context.normalAnswer.value.trim().toLowerCase();
+        const input = normalizeAnswerInput(context.normalAnswer.value);
 
         if (!current || context.normalInputDisabled.value || !input) return;
 
         context.ensureKanaStats(current.char);
 
-        if (input === current.romaji) {
+        const acceptedAnswers = new Set([
+            normalizeAnswerInput(current.romaji),
+            normalizeAnswerInput(current.char),
+        ]);
+
+        if (acceptedAnswers.has(input)) {
             context.hits.value += 1;
             context.getKanaStats(current.char).hits += 1;
             context.addXp(XP_REWARD.normal);
@@ -78,17 +87,23 @@ export function createKanaQuizAnswerHandlers(context: CommonContext & {
 
     function submitComboAnswer() {
         const combo = context.currentCombo.value;
-        const input = context.comboAnswer.value.trim().toLowerCase();
+        const input = normalizeAnswerInput(context.comboAnswer.value);
 
         if (!combo.length || context.comboInputDisabled.value || !input) return;
 
         const correctAnswer = combo.map((char) => char.romaji).join('');
+        const correctKanaAnswer = combo.map((char) => char.char).join('');
 
         for (const char of combo) {
             context.ensureKanaStats(char.char);
         }
 
-        if (input === correctAnswer) {
+        const acceptedAnswers = new Set([
+            normalizeAnswerInput(correctAnswer),
+            normalizeAnswerInput(correctKanaAnswer),
+        ]);
+
+        if (acceptedAnswers.has(input)) {
             context.hits.value += 1;
 
             for (const char of combo) {
